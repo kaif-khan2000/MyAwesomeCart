@@ -1,0 +1,58 @@
+{%extends 'blog/basic.html'%}
+{%block body%}
+<div class="container">
+<div class="row mt-4 mb-4">
+    <div class="col-md-8 blog-main">
+      <h3 class="pb-4 mb-4 font-italic border-bottom">
+        {{blog.title}}
+      </h3>
+
+      <div class="blog-post">
+        <h2 class="blog-post-title">{{blog.head0}}</h2>
+        <p class="blog-post-meta">{{blog.pub_date}}by <a href="#">Kaif</a></p>
+        <p>{{blog.chead0}}</p>
+        <h2>{{blog.head1}}</h2>
+        <p>{{blog.chead1}}</p>
+        <h3>{{blog.head2}}</h3>
+        <p>{{blog.chead2}}</p>
+    </div><!-- /.blog-post -->
+      
+    <nav class="blog-pagination">
+      <div class="fb-like mx-3" 
+      data-href="http://localhost:8000/blog/blogpost_/{{blog.post_id}}" 
+      data-width="" data-layout="button_count" data-action="like" 
+      data-size="large" data-share="true">
+      </div>
+      
+        {%if prevEx%}
+          <a class="btn btn-outline-primary" href="{{prev.post_id}}">Previous Post</a>
+        {%endif%}
+        {%if nextEx%}
+          <a class="btn btn-outline-primary" href="{{next.post_id}}" tabindex="-1" aria-disabled="true">Next Post</a>
+        {%endif%}
+      </nav>
+      
+    </div><!-- /.blog-main -->
+
+    <aside class="col-md-4 blog-sidebar">
+      <div class="p-4 mb-3 bg-light rounded">
+        <h4 class="font-italic">About</h4>
+        <p class="mb-0">My Awesome Cart is a E commerse website <em>You can buy items</em>millions of products available</p>
+      </div>
+      
+      <div class="p-4">
+        <h4 class="font-italic">Contact Us On</h4>
+        <ol class="list-unstyled">
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Twitter</a></li>
+          <li><a href="#">Facebook</a></li>
+        </ol>
+      </div>
+    </aside><!-- /.blog-sidebar -->
+    <div class="fb-comments" 
+      data-href="http://localhost:8000/blog/blogpost_/{{blog.post_id}}" 
+      data-numposts="5" data-width="">
+    </div>
+  </div>
+  </div>
+{%endblock%}

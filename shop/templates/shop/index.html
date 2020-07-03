@@ -15,7 +15,7 @@
   }
 
   .col-md-3 img{
-    max-width: 277px;
+    width: 277px;
     height: 242px;
     
   }
@@ -72,13 +72,18 @@
     <div class="carousel-item active">
       {% for i in products %}
       <div class="col-xs-3 col-sm-3 col-md-3">
-        <div class="card" style="width: 18rem;">
-          <img src="/media/{{i.image}}"  class="card-img-top" alt="...">
+        <div class="card align-items-center" style="width: 18rem;">
+          <img src="/media/{{i.image}}"  class="card-img-top center" alt="...">
           <div class="card-body">
-            <h5 class="card-title">{{i.product_name}}</h5>
+            <h5 class="card-title" id="namepr{{i.id}}">{{i.product_name}}</h5>
             <p class="card-text">{{i.desc}}</p>
-            <button id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</a>
-          </div>
+            <span id="divpr{{i.id}}" class="divpr">
+            <button id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</button>
+            </span>
+            <a href="/shop/productview/{{i.id}}">
+              <button id="qv{{i.id}}" class="btn btn-primary ">Quick View</button>
+            </a>
+            </div>
         </div>
       </div>
       {%if forloop.counter|divisibleby:4 and not forloop.last%}
@@ -105,29 +110,94 @@
 {%endblock%}
 
 {%block js%}
-  <script>
-    
-    if(localStorage.getItem('cart')==null){
+<script>
+  $('#popcart').popover('show');
+
+  document.getElementById("popcart").setAttribute('data-content','<h5>Cart</h5>');
+
+  
+  if(localStorage.getItem('cart')==null){
       var cart = {};
-    }else{
+  }else{
       cart = JSON.parse(localStorage.getItem('cart'));
-      document.getElementById('cart').innerHTML = Object.keys(cart).length;
+      updateCart(cart);
+      updatePopover(cart);
+  }
+  
+  //if plus or minus button is clicked then change the value value
+  
+  $('.divpr').on("click","button.minus",function(){
+    console.log("minus clicked");
+    a = this.id.slice(5,);
+    cart[a] = cart[a]-1;
+    
+    localStorage.setItem('cart',JSON.stringify(cart));
+
+    updateCart(cart);
+  })
+  
+  $('.divpr').on("click","button.plus",function(){
+    console.log("plus clicked");
+    a = this.id.slice(4,);
+    cart[a]=cart[a]+1;
+    localStorage.setItem('cart',JSON.stringify(cart));
+    updateCart(cart);
+  })
+
+  
+
+  //add to cart button is pushed for first time
+  $('.cart').click(function(){
+    var idstr = this.id.toString();
+    if (cart[idstr] != undefined){
+      cart[idstr] = cart[idstr]+1;
     }
+    else{
+      cart[idstr] = 1;
+    }
+    localStorage.setItem('cart',JSON.stringify(cart));
+    updateCart(cart)
+  });
+  //this function updates the cart.  
+  function updateCart(cart){
+    for(var item in cart){
+      document.getElementById('div'+item).innerHTML = "<button id='minus"+item+
+      "' class='btn btn-primary minus'>-</button> <span id='val"+item+
+      "'>"+cart[item]+"</span> <button id='plus"+item+"' class='btn btn-primary plus'>+"+
+      "</button>";
+      
+    }
+    var totalCount = 0;
+    for(var item in cart){
+      totalCount += cart[item];
+    }
+    document.getElementById('cart').innerHTML = totalCount;
+    updatePopover(cart);
+  }
 
-    $('.cart').click(function(){
-      var idstr = this.id.toString();
-      if (cart[idstr] != undefined){
-        cart[idstr] = cart[idstr]+1;
-      }
-      else{
-        cart[idstr] = 1;
-      }
-      console.log(cart);
-      localStorage.setItem('cart',JSON.stringify(cart));
-      document.getElementById('cart').innerHTML = Object.keys(cart).length;
-    });
+  function updatePopover(cart){
+    console.log("popover");
+    var popstr = "";
+    popstr += "<h5> Cart for Your items in my shopping cart</h5><div class='mx-2 my-2'>";
+    var i = 1
+    for(var item in cart){
+      popstr += "<b>"+i+". </b> ";
+      popstr += document.getElementById('name'+item).innerHTML + " Qty: "+cart[item]+"<br/>";
+      i++;
+    }
+    popstr += "</div>";
+    popstr = popstr + "<button>cart</button>";
+    console.log(popstr);
+    document.getElementById("popcart").setAttribute('data-content',popstr);
+    $('#popcart').popover('show');
 
-    console.log("working")
-  </script>
+  }
 
+  function clearCart(cart){
+    localStorage.clear();
+    cart = {};
+    updateCart(cart);
+  }
+
+</script>
 {%endblock%}
